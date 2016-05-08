@@ -175,6 +175,9 @@ class Curtains:
 	def stop(self):
 		if is_production:
 			# Shut off both motors
+			self.close_motor_a_p.stop()
+			self.close_motor_b_p.stop()
+			
 			GPIO.output(self.close_motor_a, False)
 			GPIO.output(self.close_motor_b, False)
 
@@ -257,5 +260,11 @@ def stop_calibration():
 def get_state():
 	return Curtains.get_status()
 
-if __name__ == "__main__":
-	app.run(host='0.0.0.0', port=5000, debug=True)
+Curtains._open()
+
+sleep(10)
+
+Curtains.stop()
+
+# if __name__ == "__main__":
+# 	app.run(host='0.0.0.0', port=5000, debug=True)
