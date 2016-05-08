@@ -90,20 +90,20 @@ class Curtains:
 		if is_production:
 			GPIO.setmode(GPIO.BCM)
 
-			# Setup PWM
-			self.open_motor_a_p = GPIO.PWM(self.open_motor_a, self.hertz)
-			self.open_motor_b_p = GPIO.PWM(self.open_motor_b, self.hertz)
+			# Setup motors
+			GPIO.setup(self.open_motor_a, GPIO.OUT)
+			GPIO.setup(self.open_motor_b, GPIO.OUT)
 
-			self.close_motor_a_p = GPIO.PWM(self.close_motor_a, self.hertz)
-			self.close_motor_b_p = GPIO.PWM(self.close_motor_b, self.hertz)
+			GPIO.setup(self.close_motor_a, GPIO.OUT)
+			GPIO.setup(self.close_motor_b, GPIO.OUT)
 			
 			if Config.get('use_pwm'):
-				# Setup motors
-				GPIO.setup(self.open_motor_a, GPIO.OUT)
-				GPIO.setup(self.open_motor_b, GPIO.OUT)
+				# Setup PWM
+				self.open_motor_a_p = GPIO.PWM(self.open_motor_a, self.hertz)
+				self.open_motor_b_p = GPIO.PWM(self.open_motor_b, self.hertz)
 
-				GPIO.setup(self.close_motor_a, GPIO.OUT)
-				GPIO.setup(self.close_motor_b, GPIO.OUT)
+				self.close_motor_a_p = GPIO.PWM(self.close_motor_a, self.hertz)
+				self.close_motor_b_p = GPIO.PWM(self.close_motor_b, self.hertz)
 			
 	
 	def _open(self):
