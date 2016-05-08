@@ -1,12 +1,15 @@
-env = 'prod'
-
-if env != 'dev':
-	import RPi.GPIO as GPIO
-
 from flask import Flask, render_template, request
 from time import sleep
 from sys import argv
 import time, json, os.path, urlparse
+
+try:
+	is_production = argv[1] == 'prod' or argv[1] == 'production' or argv[1] == 'p'
+except IndexError:
+	is_production = False
+
+if is_production:
+	import RPi.GPIO as GPIO
 
 #import config
 # Define Config Class
@@ -73,55 +76,47 @@ Config = Config()
 # Define Curtains Class
 class Curtains:
 	# Open motor
-	open_motor_a = 16
+	open_motor_a = 17
 	open_motor_b = 18
-	open_motor_c = 22
 
 	# Close motor
 	close_motor_a = 22
 	close_motor_b = 23
-	close_motor_c = 19
 
 	def __init__(self):
-		if env != 'dev':
+		if is_production:
 			GPIO.setmode(GPIO.BCM)
 
 			# Setup motors
 			GPIO.setup(self.open_motor_a, GPIO.OUT)
 			GPIO.setup(self.open_motor_b, GPIO.OUT)
-			#GPIO.setup(self.open_motor_c, GPIO.OUT)
 
 			GPIO.setup(self.close_motor_a, GPIO.OUT)
 			GPIO.setup(self.close_motor_b, GPIO.OUT)
-			#GPIO.setup(self.close_motor_c, GPIO.OUT)
 	
 	def _open(self):
 		print "opening"
-		if env != 'dev':
+		if is_production:
 			# Pull down on the open motor
 			GPIO.output(self.open_motor_a, True)
 			GPIO.output(self.open_motor_b, False)
-			#GPIO.output(self.open_motor_c, GPIO.HIGH)
 
 			# Unwind the close motor so the sting
 			# doesn't get caught on the wheel
 			GPIO.output(self.close_motor_a, False)
 			GPIO.output(self.close_motor_b, True)
-			#GPIO.output(self.close_motor_c, GPIO.HIGH)
 
 	def _close(self):
 		print "closing"
-		if env != 'dev':
+		if is_production:
 			# Pull down on the close motor
 			GPIO.output(self.close_motor_a, True)
 			GPIO.output(self.close_motor_b, False)
-			#GPIO.output(self.close_motor_c, GPIO.HIGH)
 
 			# Unwind the open motor so the sting
 			# doesn't get caught on the wheel
 			GPIO.output(self.open_motor_a, False)
 			GPIO.output(self.open_motor_b, True)
-			#GPIO.output(self.open_motor_c, GPIO.HIGH)
 
 	def move(self, to_state=0):
 		current_state = Config.get('state')
@@ -161,15 +156,13 @@ class Curtains:
 		return current_state
 
 	def stop(self):
-		if env != 'dev':
+		if is_production:
 			# Shut off both motors
 			GPIO.output(self.close_motor_a, False)
 			GPIO.output(self.close_motor_b, False)
-			#GPIO.output(self.close_motor_c, False)
 
 			GPIO.output(self.open_motor_a, False)
 			GPIO.output(self.open_motor_b, False)
-			#GPIO.output(self.open_motor_c, False)
 
 			GPIO.cleanup
 
@@ -211,8 +204,6 @@ class Curtains:
 		return json.dumps({"state": Config.get('state'), "intervals": Config.get('interval_qty')})
 
 Curtains = Curtains()
-
-#Curtains.move(1)
 
 app = Flask(__name__)
 
