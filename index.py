@@ -83,6 +83,8 @@ class Curtains:
 	close_motor_a = 22
 	close_motor_b = 23
 
+	hertz = 50
+
 	def __init__(self):
 		if is_production:
 			GPIO.setmode(GPIO.BCM)
@@ -93,32 +95,45 @@ class Curtains:
 
 			GPIO.setup(self.close_motor_a, GPIO.OUT)
 			GPIO.setup(self.close_motor_b, GPIO.OUT)
+			
+			# Setup PWM
+			self.open_motor_a_p = GPIO.PWM(self.open_motor_a, self.hertz)
+			self.open_motor_b_p = GPIO.PWM(self.open_motor_b, self.hertz)
+
+			self.close_motor_a_p = GPIO.PWM(self.close_motor_a, self.hertz)
+			self.close_motor_b_p = GPIO.PWM(self.close_motor_b, self.hertz)
 	
 	def _open(self):
 		print "opening"
 		if is_production:
 			print "motor opening"
+
+			self.close_motor_b_p.start(self.hertz)
+
+			self.close_motor_b_p.ChangeDutyCycle(90)
+			self.close_motor_b_p.ChangeFrequency(self.hertz * 2)
+
 			# Pull down on the open motor
-			GPIO.output(self.open_motor_a, True)
-			GPIO.output(self.open_motor_b, False)
+			# GPIO.output(self.open_motor_a, True)
+			# GPIO.output(self.open_motor_b, False)
 
 			# Unwind the close motor so the sting
 			# doesn't get caught on the wheel
-			GPIO.output(self.close_motor_a, False)
-			GPIO.output(self.close_motor_b, True)
+			# GPIO.output(self.close_motor_a, False)
+			# GPIO.output(self.close_motor_b, True)
 
 	def _close(self):
 		print "closing"
 		if is_production:
 			print "motor closing"
 			# Pull down on the close motor
-			GPIO.output(self.close_motor_a, True)
-			GPIO.output(self.close_motor_b, False)
+			# GPIO.output(self.close_motor_a, True)
+			# GPIO.output(self.close_motor_b, False)
 
 			# Unwind the open motor so the sting
 			# doesn't get caught on the wheel
-			GPIO.output(self.open_motor_a, False)
-			GPIO.output(self.open_motor_b, True)
+			# GPIO.output(self.open_motor_a, False)
+			# GPIO.output(self.open_motor_b, True)
 
 	def move(self, to_state=0):
 		current_state = Config.get('state')
