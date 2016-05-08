@@ -97,6 +97,7 @@ class Curtains:
 	def _open(self):
 		print "opening"
 		if is_production:
+			print "motor opening"
 			# Pull down on the open motor
 			GPIO.output(self.open_motor_a, True)
 			GPIO.output(self.open_motor_b, False)
@@ -109,6 +110,7 @@ class Curtains:
 	def _close(self):
 		print "closing"
 		if is_production:
+			print "motor closing"
 			# Pull down on the close motor
 			GPIO.output(self.close_motor_a, True)
 			GPIO.output(self.close_motor_b, False)
