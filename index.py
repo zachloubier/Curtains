@@ -110,6 +110,8 @@ class Curtains:
 
 			self.close_motor_b_p.start(self.hertz)
 
+			sleep(10)
+
 			self.close_motor_b_p.ChangeDutyCycle(90)
 			self.close_motor_b_p.ChangeFrequency(self.hertz * 2)
 
